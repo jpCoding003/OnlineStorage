@@ -4,8 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.tops.onlinestorage.databinding.ProductRowItemBinding
+import com.tops.onlinestorage.model.Product
 
-class ProductAdapter(private val products: String): RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
+class ProductAdapter(private val products: List<Product>): RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -19,11 +20,14 @@ class ProductAdapter(private val products: String): RecyclerView.Adapter<Product
         position: Int
     ) {
         val product = products[position]
+
         holder.binding.text1.setText("ID = ${product.id}")
         holder.binding.text2.setText("Name = ${product.name}")
     }
 
-    override fun getItemCount(): Int = products.length
+    override fun getItemCount(): Int {
+        return products.size
+    }
 
     class ProductViewHolder(val binding: ProductRowItemBinding): RecyclerView.ViewHolder(binding.root)
 }

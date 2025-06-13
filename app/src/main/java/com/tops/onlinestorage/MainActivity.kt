@@ -2,6 +2,7 @@ package com.tops.onlinestorage
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -34,8 +35,10 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
+               // binding.progressBar.visibility = View.VISIBLE
                 val result = getdata()
-
+                //binding.progressBar.visibility = View.GONE
+                Log.d("API_CALL", "Result: $result")
                 binding.productRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
                 binding.productRecyclerView.adapter = ProductAdapter(result!!)
             }catch (e: Exception){
@@ -45,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private suspend fun getdata(): String? = withContext(Dispatchers.IO){
+    private suspend fun getdata():ArrayList<Product>? = withContext(Dispatchers.IO){
 
         // Created Client for API OkHttp network operation
         // Perform network operation here
@@ -58,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         if (response.isSuccessful){
             // we use !! to tell compiler that the varaiable is
             // non-nullable type, even if it's been declared as nullable
-            val jsonResponse = response.body!!.toString()
+            val jsonResponse = response.body!!.string()
 
             jsonResponse.let {
                 val jsonArray = JSONArray(it)
@@ -66,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 val productlist = arrayListOf<Product>()
                 for (i in 0 until jsonArray.length()){
                     val jsonObject = jsonArray.getJSONObject(i)
-                    val objectID = jsonObject.getInt("id")
+                    val objectID = jsonObject.getString("id")
                     val objectName = jsonObject.getString("name")
 
                     //Product is objectData in the respone.body
@@ -74,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                     val product = Product(objectID, objectName)
                     productlist.add(product)
                 }
-                return@withContext jsonResponse
+                return@withContext productlist
             }
         }else{
             null
