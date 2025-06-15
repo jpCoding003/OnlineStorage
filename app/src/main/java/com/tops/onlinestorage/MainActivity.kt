@@ -67,14 +67,32 @@ class MainActivity : AppCompatActivity() {
                 val jsonArray = JSONArray(it)
                 // Create list to store data in array
                 val productlist = arrayListOf<Product>()
+
                 for (i in 0 until jsonArray.length()){
                     val jsonObject = jsonArray.getJSONObject(i)
                     val objectID = jsonObject.getString("id")
                     val objectName = jsonObject.getString("name")
 
+                    //Complex or unknown property , when you don't know the property OR unknow property insite the object
+                    // ( don't know key OR Dynamic key)
+                    val dataMap = mutableMapOf<String, Any>()
+
+                    try {
+                        val datajsonObject = jsonObject.getJSONObject("data")
+                        val iterator = datajsonObject.keys()
+                        while (iterator.hasNext()){
+                            val key = iterator.next()
+                            val value = datajsonObject.get(key)
+                            dataMap .put(key,value)
+                    }
+                    }catch (e: Exception){
+                        Log.e("API_CALL", "Error: ${e.message}")
+                    }
+
+
                     //Product is objectData in the respone.body
                     // Here "name" & "id" are Objects of data present in response.body  OR can say The data in API
-                    val product = Product(objectID, objectName)
+                    val product = Product(objectID, objectName, dataMap)
                     productlist.add(product)
                 }
                 return@withContext productlist
