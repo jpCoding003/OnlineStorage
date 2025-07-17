@@ -1,27 +1,27 @@
 package com.tops.onlinestorage
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.tops.onlinestorage.adapter.ProductAdapter
+import com.tops.onlinestorage.adapter.MyAdapter
 import com.tops.onlinestorage.databinding.ActivityMainBinding
-import com.tops.onlinestorage.model.Product
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.Request
-import org.json.JSONArray
+import com.tops.onlinestorage.model.ProductRoot
+import com.tops.onlinestorage.viewmodel.ProductViewModel
+
+// API :  https://dummyjson.com/products
 
 private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private  lateinit var binding: ActivityMainBinding
+    private  val productviewmodel: ProductViewModel by viewModels()
+    private lateinit var adapter: MyAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -33,72 +33,15 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        lifecycleScope.launch {
-            try {
-               // binding.progressBar.visibility = View.VISIBLE
-                val result = getdata()
-                //binding.progressBar.visibility = View.GONE
-                Log.d("API_CALL", "Result: $result")
-                binding.productRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
-                binding.productRecyclerView.adapter = ProductAdapter(result!!)
-            }catch (e: Exception){
-                Log.e("API_CALL", "Error: ${e.message}")
-            }
-        }
+        adapter = MyAdapter(emptyList()) // or use mutableListOf() if needed
+        binding.rvProductList.layoutManager = LinearLayoutManager(this)
+        binding.rvProductList.adapter = adapter
 
-    }
+        productviewmodel.loadData()
 
-    private suspend fun getdata():ArrayList<Product>? = withContext(Dispatchers.IO){
+        productviewmodel.productData.observe(this, Observer{
+            products-> adapter.updateData(products)
+        })
 
-        // Created Client for API OkHttp network operation
-        // Perform network operation here
-        val client = okhttp3.OkHttpClient()
-
-        // A reguest Builder created to requst data(To Get Data From API) from the url OR API
-        var request: Request = Request.Builder().url("https://api.restful-api.dev/objects").build()
-
-        val response = client.newCall(request).execute()
-        if (response.isSuccessful){
-            // we use !! to tell compiler that the varaiable is
-            // non-nullable type, even if it's been declared as nullable
-            val jsonResponse = response.body!!.string()
-
-            jsonResponse.let {
-                val jsonArray = JSONArray(it)
-                // Create list to store data in array
-                val productlist = arrayListOf<Product>()
-
-                for (i in 0 until jsonArray.length()){
-                    val jsonObject = jsonArray.getJSONObject(i)
-                    val objectID = jsonObject.getString("id")
-                    val objectName = jsonObject.getString("name")
-
-                    //Complex or unknown property , when you don't know the property OR unknow property insite the object
-                    // ( don't know key OR Dynamic key)
-                    val dataMap = mutableMapOf<String, Any>()
-
-                    try {
-                        val datajsonObject = jsonObject.getJSONObject("data")
-                        val iterator = datajsonObject.keys()
-                        while (iterator.hasNext()){
-                            val key = iterator.next()
-                            val value = datajsonObject.get(key)
-                            dataMap .put(key,value)
-                    }
-                    }catch (e: Exception){
-                        Log.e("API_CALL", "Error: ${e.message}")
-                    }
-
-
-                    //Product is objectData in the respone.body
-                    // Here "name" & "id" are Objects of data present in response.body  OR can say The data in API
-                    val product = Product(objectID, objectName, dataMap)
-                    productlist.add(product)
-                }
-                return@withContext productlist
-            }
-        }else{
-            null
-        }
     }
 }
