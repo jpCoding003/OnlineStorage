@@ -8,11 +8,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tops.onlinestorage.adapter.MyAdapter
 import com.tops.onlinestorage.databinding.ActivityMainBinding
 import com.tops.onlinestorage.model.ProductRoot
 import com.tops.onlinestorage.viewmodel.ProductViewModel
+import kotlinx.coroutines.launch
 
 // API :  https://dummyjson.com/products
 
@@ -33,15 +35,33 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        adapter = MyAdapter(emptyList()) // or use mutableListOf() if needed
+        adapter = MyAdapter(mutableListOf()){ product->
+            deleteProduct(product)
+        }
         binding.rvProductList.layoutManager = LinearLayoutManager(this)
         binding.rvProductList.adapter = adapter
 
         productviewmodel.loadData()
 
         productviewmodel.productData.observe(this, Observer{
-            products-> adapter.updateData(products)
+            products-> adapter.updateData(products as MutableList<ProductRoot>)
         })
 
+    }
+
+    private fun deleteProduct(product: ProductRoot) {
+        lifecycleScope.launch {
+            try {
+                val response = ApiClient.apiService.deleteProduct(product.id)
+                if (response.isSuccessful) {
+                    adapter.removeItem(product.id)
+
+                } else {
+
+                }
+            } catch (e: Exception) {
+
+            }
+        }
     }
 }

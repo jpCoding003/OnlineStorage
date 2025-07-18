@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ClientProductApi {
 
     val retrofit : Retrofit by lazy {
-        Retrofit.Builder().baseUrl("https://dummyjson.com")
+        Retrofit.Builder().baseUrl("https://dummyjson.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

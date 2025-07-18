@@ -16,8 +16,6 @@ class ProductViewModel : ViewModel() {
     private  var _productData = MutableLiveData<List<ProductRoot>>()
      var productData: LiveData<List<ProductRoot>> = _productData
 
-
-    private var apiProducts = MutableLiveData<ProductRoot>()
     private var dataPresent: Boolean= false
 
     fun loadData(): LiveData<List<ProductRoot>> {
@@ -29,9 +27,6 @@ class ProductViewModel : ViewModel() {
                     response: Response<ProductResponse?>
                 ) {
                     if (response.isSuccessful) {
-//                        val products = response.body()
-//                        _productData.value = products as MutableList<ProductRoot>
-//                        dataPresent = true
 
                         response.body()?.let { productresponse ->
                             _productData.value = productresponse.products
