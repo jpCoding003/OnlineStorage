@@ -3,6 +3,7 @@ package com.tops.onlinestorage.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import com.tops.onlinestorage.databinding.RowItemProductsBinding
 import com.tops.onlinestorage.model.ProductRoot
 
@@ -29,6 +30,8 @@ class MyAdapter(private var productList: MutableList<ProductRoot>, private val o
         holder.binding.cardView.setOnClickListener {
             onDeleteClick(products)
         }
+
+        Picasso.get().load(products.images.get(0)).into(holder.binding.imageview)
 
     }
 

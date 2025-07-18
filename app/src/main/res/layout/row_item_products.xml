@@ -11,8 +11,21 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/imageview"
+            android:layout_width="105dp"
+            android:layout_height="105dp"
+            android:background="@color/white"
+            android:src="@drawable/ic_launcher_foreground"/>
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tvProductTitle"
@@ -51,6 +64,8 @@
             android:rating="4.0"
             android:isIndicator="true"
             style="@style/Widget.AppCompat.RatingBar.Small" />
+
+    </LinearLayout>
 
     </LinearLayout>
 
