@@ -1,7 +1,7 @@
 package com.tops.onlinestorage.model
 
 data class Users(
-    val id: Int,
+    val id: Int? = null,
     val firstName: String,
     val lastName: String,
     val phone: String,

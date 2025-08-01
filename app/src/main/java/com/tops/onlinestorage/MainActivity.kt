@@ -1,5 +1,6 @@
 package com.tops.onlinestorage
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -41,5 +42,10 @@ class MainActivity : AppCompatActivity() {
             list-> adapter.submitList(list)
         })
 
+
+        binding.btnAddUser.setOnClickListener {
+            val intent = Intent(this, AddUserActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
