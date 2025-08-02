@@ -1,8 +1,10 @@
 package com.tops.onlinestorage
 
 import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -32,16 +34,22 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        userviewmodel.isLoading.observe(this, Observer{
+            isLoading->
+            binding.viewProgressbar.visibility =
+                if (isLoading) View.VISIBLE else View.GONE
+        })
+
         userviewmodel.getAllData(this)
 
         adapter = MyAdapter(mutableListOf())
         binding.rvUserList.layoutManager = LinearLayoutManager(this)
+
         binding.rvUserList.adapter = adapter
 
         userviewmodel.userList.observe(this , Observer{
             list-> adapter.submitList(list)
         })
-
 
         binding.btnAddUser.setOnClickListener {
             val intent = Intent(this, AddUserActivity::class.java)

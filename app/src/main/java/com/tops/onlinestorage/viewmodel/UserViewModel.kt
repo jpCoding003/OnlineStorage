@@ -22,9 +22,12 @@ class UserViewModel : ViewModel() {
     private val _insertSuccess = MutableLiveData<Boolean>()
     val insertSuccess: LiveData<Boolean> = _insertSuccess
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
 
     fun getAllData(context: Context){
 
+        _isLoading.postValue(true)
         val call = Client.apiService.getUsers()
 
         call.enqueue(object : Callback<UserResponse>{
@@ -36,6 +39,8 @@ class UserViewModel : ViewModel() {
                     val userdata = response.body()
                     _userList.value = userdata!!.users
                 }
+
+                _isLoading.postValue(false)
             }
 
             override fun onFailure(
