@@ -12,7 +12,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MyAdapter(private var userList : MutableList<Users>): RecyclerView.Adapter<MyAdapter.UserViewHolder>() {
+class MyAdapter(private var userList : MutableList<Users>,
+                private val onDeleteClick: (Users) -> Unit): RecyclerView.Adapter<MyAdapter.UserViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -30,23 +31,7 @@ class MyAdapter(private var userList : MutableList<Users>): RecyclerView.Adapter
         holder.binding.tvemail.setText(list.email)
 
         holder.binding.tvcardview.setOnClickListener {
-         var call = Client.apiService.deleteUser(list.id)
-            call.enqueue(object: Callback<Void>{
-                override fun onResponse(
-                    call: Call<Void?>,
-                    response: Response<Void?>
-                ) {
-                    if (response.isSuccessful){
-                        userList.removeAt(holder.adapterPosition)
-                        notifyItemRemoved(holder.adapterPosition)
-                    }
-                }
-
-                override fun onFailure(call: Call<Void?>, t: Throwable) {
-                    Log.i(" Error", " Adapter ${t.message}")
-                }
-
-            })
+            onDeleteClick(list)
         }
 
     }
@@ -57,6 +42,8 @@ class MyAdapter(private var userList : MutableList<Users>): RecyclerView.Adapter
         userList = list.toMutableList()
         notifyDataSetChanged()
     }
+
+
 
     class UserViewHolder(val binding: ItemRowUserBinding): RecyclerView.ViewHolder(binding.root)
 }

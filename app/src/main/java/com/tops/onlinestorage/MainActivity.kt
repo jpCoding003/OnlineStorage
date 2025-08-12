@@ -42,7 +42,9 @@ class MainActivity : AppCompatActivity() {
 
         userviewmodel.getAllData(this)
 
-        adapter = MyAdapter(mutableListOf())
+        adapter = MyAdapter(mutableListOf()){ user ->
+            userviewmodel.deleteUser(user.id!!)
+        }
         binding.rvUserList.layoutManager = LinearLayoutManager(this)
 
         binding.rvUserList.adapter = adapter

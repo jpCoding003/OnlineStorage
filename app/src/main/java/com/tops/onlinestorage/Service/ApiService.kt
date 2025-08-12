@@ -18,6 +18,6 @@ interface ApiService {
     @DELETE("users/{id}")
     fun deleteUser(@Path("id") userId : Int?) : Call<Void>
 
-    @POST("users")
+    @POST("users/add")
     fun insertUser(@Body newuser: Users) : Call<UserResponse>
 }

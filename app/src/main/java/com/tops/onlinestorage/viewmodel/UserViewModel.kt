@@ -88,4 +88,28 @@ class UserViewModel : ViewModel() {
             }
         })
     }
+
+    fun deleteUser(userId: Int) {
+        _isLoading.postValue(true)
+        val call = Client.apiService.deleteUser(userId)
+
+        call.enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    // Remove the user from the current list
+                    val updatedList = _userList.value?.toMutableList()
+                    updatedList?.removeIf { it.id == userId }
+                    _userList.postValue(updatedList)
+                } else {
+                    Log.e("UserViewModel", "Delete failed: ${response.message()}")
+                }
+                _isLoading.postValue(false)
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e("UserViewModel", "Delete error: ${t.message}")
+                _isLoading.postValue(false)
+            }
+        })
+    }
 }

@@ -12,3 +12,9 @@ data class Users(
 data class UserResponse(
     val users: List<Users>
 )
+
+data class AddUser(
+    val id: Int? = null,
+    val firstName: String,
+    val lastName: String
+)
